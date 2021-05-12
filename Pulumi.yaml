@@ -1,0 +1,3 @@
+name: Ado.Agent
+runtime: dotnet
+description: Provision an Azure DevOps Build/Release agent.
