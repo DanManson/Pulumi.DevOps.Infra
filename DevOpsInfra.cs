@@ -90,11 +90,7 @@ class DevOpsInfra : Pulumi.Stack
                     new Pulumi.AzureNative.Network.Inputs.SubnetArgs
                     {
                         AddressPrefix = _config.Require("bastion.cidr"),
-                        Name = _config.Require("AzureBastionSubnet"),
-                        NetworkSecurityGroup = new Pulumi.AzureNative.Network.Inputs.NetworkSecurityGroupArgs
-                        {
-                            Id = networkSecurityGroup.Id,
-                        },
+                        Name = "AzureBastionSubnet",
                     },
                     new Pulumi.AzureNative.Network.Inputs.SubnetArgs
                     {
@@ -116,17 +112,31 @@ class DevOpsInfra : Pulumi.Stack
         #region PublicIp (-ip)
         var publicIp = new Pulumi.AzureNative.Network.PublicIPAddress ($"bastion-{_config.Require("env")}-ip-",new Pulumi.AzureNative.Network.PublicIPAddressArgs
             {
-                PublicIPAddressVersion = "IPv4",
-                PublicIPAllocationMethod = "Static",
+                PublicIPAddressVersion = IPVersion.IPv4,
+                PublicIPAllocationMethod = IPAllocationMethod.Static,
                 IdleTimeoutInMinutes = 4,
                 Location = _config.Require("location"),
                 ResourceGroupName = resourceGroup.Name,
                 Sku = new Pulumi.AzureNative.Network.Inputs.PublicIPAddressSkuArgs
                 {
-                    Name = "Basic",
-                    Tier = "Regional",
+                    Name = PublicIPAddressSkuName.Standard,
+                    Tier = PublicIPAddressSkuTier.Regional,
                 },
             });
+            var vmPublicIp = new Pulumi.AzureNative.Network.PublicIPAddress ($"{_config.Require("agent.name")}-{_config.Require("env")}-ip-",new Pulumi.AzureNative.Network.PublicIPAddressArgs
+            {
+                PublicIPAddressVersion = IPVersion.IPv4,
+                PublicIPAllocationMethod = IPAllocationMethod.Static,
+                IdleTimeoutInMinutes = 4,
+                Location = _config.Require("location"),
+                ResourceGroupName = resourceGroup.Name,
+                Sku = new Pulumi.AzureNative.Network.Inputs.PublicIPAddressSkuArgs
+                {
+                    Name = PublicIPAddressSkuName.Standard,
+                    Tier = PublicIPAddressSkuTier.Regional,
+                },
+            });
+            
         #endregion
 
         #region NetworkInterface (-nic)
@@ -143,10 +153,14 @@ class DevOpsInfra : Pulumi.Stack
                     Primary = true,
                     PrivateIPAllocationMethod = IPAllocationMethod.Dynamic,
                     PrivateIPAddressVersion = "IPv4",
+                    PublicIPAddress = new Pulumi.AzureNative.Network.Inputs.PublicIPAddressArgs
+                    {
+                        Id = vmPublicIp.Id,
+                    },
                     Subnet = new Pulumi.AzureNative.Network.Inputs.SubnetArgs
                     {
                         #pragma warning disable
-                        Id = network.Subnets.Apply(s => s[1].Id), // ToDo: get by name not idex
+                        Id = network.Subnets.Apply(s => s[1].Id),
                     },
                 },
             },
@@ -244,7 +258,7 @@ class DevOpsInfra : Pulumi.Stack
                         Name = "bastionHostIpConfiguration",
                         PublicIPAddress = new Pulumi.AzureNative.Network.Inputs.SubResourceArgs
                         {
-                            Id = publicIp.IpAddress,
+                            Id = publicIp.Id,
                         },
                         Subnet = new Pulumi.AzureNative.Network.Inputs.SubResourceArgs
                         {
