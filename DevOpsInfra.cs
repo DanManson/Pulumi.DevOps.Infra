@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Net; 
 
-class NewAgent : Pulumi.Stack
+class DevOpsInfra : Pulumi.Stack
 {
     Pulumi.Config _config;
 
@@ -17,7 +17,7 @@ class NewAgent : Pulumi.Stack
     public Output<string>? IpAddress { get; set; }
     #endregion
 
-    public NewAgent()
+    public DevOpsInfra()
     {
         _config = new Config("ado");
 

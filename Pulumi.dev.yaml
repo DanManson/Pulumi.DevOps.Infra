@@ -3,19 +3,14 @@ config:
   ado:env: dev
   ado:admin.user: dmanson
   ado:admin.pw: f1ebd633-067c-4897-80a1-277a3fbe04f4
-  
   ado:resourceGroup: devops
-  
   ado:vnet.name: devops
   ado:vnet.cidr: "10.0.0.0/16"  # 65,536
   ado:bastion.cidr: "10.0.0.0/27" # 32
   ado:snet.name: default
   ado:snet.cidr: "10.0.1.0/24" # 256 
-  
   ado:agent.name: adoagent
-
   ado:nsg.name: allow-https
-  
   ado:vm.vmSize: Standard_B2s # Pulumi.AzureNative.Compute.VirtualMachineSizeTypes
   ado:vm.diskSizeGB: 1024
   ado:tags:

@@ -3,5 +3,5 @@ using Pulumi;
 
 class Program
 {
-    static Task<int> Main() => Deployment.RunAsync<NewAgent>();
+    static Task<int> Main() => Deployment.RunAsync<DevOpsInfra>();
 }
